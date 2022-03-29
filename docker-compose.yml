@@ -1,6 +1,17 @@
 version: "3.8"
 services:
-  axpc-bd:
-    build: .
+  go-cd-server:
+    build: go-cd-server
+    container_name: go-cd-server
     ports:
       - "8153:8153"
+  go-cd-agent:
+    build: go-cd-agent
+    depends_on:
+      - go-cd-server
+    container_name: go-cd-agent
+    environment:
+      - "GO_SERVER_URL=http://go-cd-server:8153/go"
+      - "AGENT_AUTO_REGISTER_KEY=8e3e8963-3432-42b0-8208-730ab4d0701b"
+      - "AGENT_AUTO_REGISTER_RESOURCES=maven"
+      - "AGENT_AUTO_REGISTER_ENVIRONMENTS=local"

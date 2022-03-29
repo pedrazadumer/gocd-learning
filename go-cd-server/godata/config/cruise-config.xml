@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="cruise-config.xsd" schemaVersion="139">
+    <server agentAutoRegisterKey="8e3e8963-3432-42b0-8208-730ab4d0701b" webhookSecret="faf867a3-55ce-4696-a55a-49431847671a" serverId="aab4b23d-0561-4713-a9bf-1deff7cee8a9" tokenGenerationKey="522dd8b8-7a76-4535-aa06-2f2fbc5bd27f">
+        <backup emailOnSuccess="true" emailOnFailure="true" />
+        <artifacts>
+            <artifactsDir>artifacts</artifactsDir>
+        </artifacts>
+    </server>
+    <pipelines group="defaultGroup">
+        <pipeline name="carp-ciu-operador-entidad-int">
+            <materials>
+                <git url="https://github.com/pedrazadumer/carp-ciu-operador-entidad" />
+            </materials>
+            <stage name="Test-and-build" cleanWorkingDir="true">
+                <jobs>
+                    <job name="unit-tests">
+                        <tasks>
+                            <exec command="pwd" workingdir="./">
+                                <runif status="any" />
+                            </exec>
+                            <exec command="mvn" workingdir="./">
+                                <arg>clean</arg>
+                                <arg>test</arg>
+                                <runif status="any" />
+                            </exec>
+                            <exec command="mvn" workingdir="./">
+                                <arg>clean</arg>
+                                <arg>package</arg>
+                                <runif status="passed" />
+                            </exec>
+                        </tasks>
+                        <resources>
+                            <resource>maven</resource>
+                        </resources>
+                        <artifacts>
+                            <artifact type="build" src="target/operador.war" dest="operador.war" />
+                        </artifacts>
+                    </job>
+                </jobs>
+            </stage>
+        </pipeline>
+    </pipelines>
+    <environments>
+        <environment name="local">
+            <pipelines>
+                <pipeline name="carp-ciu-operador-entidad-int" />
+            </pipelines>
+        </environment>
+    </environments>
+</cruise>
